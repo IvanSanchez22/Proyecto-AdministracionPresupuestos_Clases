@@ -20,6 +20,10 @@ class Presupuesto {
         this.restante = Number(presupuesto);
         this.gastos = [];
     }
+
+    nuevoGasto(gasto) {
+        this.gastos = [...this.gastos, gasto]
+    }
 }
 
 class UI {
@@ -47,7 +51,7 @@ class UI {
         divMensaje.textContent = mensaje;
 
         //Insertamos el texto
-        document.querySelector('.primario').insertBefore(divMensaje, formulario);
+        document.querySelector('.primario').insertBefore(divMensaje, formulario); //Pasamos lo que vamos a insertar y donde
 
         //Quitar texto después de unos segundos
         setTimeout(() => {
@@ -59,6 +63,8 @@ class UI {
 //Intanciando UI
 const ui = new UI();
 let presupuesto;
+
+
 //Funciones
 
 function preguntarPresupuesto() {
@@ -78,13 +84,26 @@ function agregarGasto(e) {
 
     //Leer datos del formulario
     const nombre = document.querySelector('#gasto').value
-    const cantidad = document.querySelector('#cantidad').value
+    const cantidad = Number(document.querySelector('#cantidad').value);
 
     //Validacion
     if (nombre === '' || cantidad === '') {
         ui.imprimirAlerta('Ambos campos son obligatorios', 'error');
-    }else if(cantidad <= 0 || isNaN(cantidad)) {
+        return;
+    } else if (cantidad <= 0 || isNaN(cantidad)) {
         ui.imprimirAlerta('Cantidad no válida', 'error')
+        return; //Para que no se siga ejecutando código si se entra
     }
+
+    //Genera un objeto con el gasto
+    const gasto = { nombre, cantidad, id: Date.now() } //Lo mismo que el destructing pero al revés (object Literal) guarda en gasto el nombre y la cantidad
+    //Añade un nuevo gasto al array de gastos
+    presupuesto.nuevoGasto(gasto);
+    
+    //Mensaje de validación
+    ui.imprimirAlerta('Gasto añadido correctamente')
+    
+    //Reinicia el formulario
+    formulario.reset();
 
 }
