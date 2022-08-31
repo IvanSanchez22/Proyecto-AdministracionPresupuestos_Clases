@@ -23,7 +23,14 @@ class Presupuesto {
 
     nuevoGasto(gasto) {
         this.gastos = [...this.gastos, gasto]
+        this.calcularRestante();
     }
+
+    calcularRestante() {
+        const gastado = this.gastos.reduce((total, gasto) => total + gasto.cantidad, 0);
+        this.restante = this.presupuesto - gastado;
+    }
+
 }
 
 class UI {
@@ -74,7 +81,7 @@ class UI {
 
             //Agregar el html del gasto
             nuevoGasto.innerHTML = `
-            ${nombre} <span class="badge badge-primary badge-pill">${cantidad}</span> 
+            ${nombre} <span class="badge badge-primary badge-pill"> $ ${cantidad}</span> 
             `; //Clases de boostrap
 
             //Botón para borrar el gasto
@@ -93,6 +100,12 @@ class UI {
             gastoListado.removeChild(gastoListado.firstChild);
         }
     }
+
+    actualizarRestante(restante){
+        document.querySelector('#restante').textContent = restante;
+    }
+
+
 
 }
 
@@ -140,9 +153,11 @@ function agregarGasto(e) {
     ui.imprimirAlerta('Gasto añadido correctamente')
 
     //Imprimir los gastos
-    const {gastos} = presupuesto;
+    const {gastos, restante} = presupuesto;
     ui.agregarGastoListado(gastos);
-    
+
+    ui.actualizarRestante(restante);
+
     //Reinicia el formulario
     formulario.reset();
 
