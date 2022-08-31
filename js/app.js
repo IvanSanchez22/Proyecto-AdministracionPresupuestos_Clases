@@ -66,13 +66,13 @@ class UI {
         }, 3000)
     }
 
-    agregarGastoListado(gastos){
+    agregarGastoListado(gastos) {
 
         this.limpiarHTML(); //Elimina el HTMl previo
 
         //Iterar sobre los gastos
-        gastos.forEach(gasto =>{
-            const {cantidad, nombre, id} = gasto;
+        gastos.forEach(gasto => {
+            const { cantidad, nombre, id } = gasto;
 
             // Crear un LI
             const nuevoGasto = document.createElement('li');
@@ -95,17 +95,35 @@ class UI {
         });
     }
 
-    limpiarHTML(){
-        while(gastoListado.firstChild){
+    limpiarHTML() {
+        while (gastoListado.firstChild) {
             gastoListado.removeChild(gastoListado.firstChild);
         }
     }
 
-    actualizarRestante(restante){
+    actualizarRestante(restante) {
         document.querySelector('#restante').textContent = restante;
     }
 
+    comprobarPresupuesto(presupuestoObj) {
+        const { presupuesto, restante } = presupuestoObj;
+        const restanteDiv = document.querySelector('.restante');
 
+        //Comprobando 25%
+        if((presupuesto / 4) > restante){
+            restanteDiv.classList.remove('alert-success', 'alert-warning');
+            restanteDiv.classList.add('alert-danger');
+        } else if((presupuesto / 2) > restante){
+            restanteDiv.classList.remove('alert-success');
+            restanteDiv.classList.add('alert-warning');
+        }
+
+        //Si el total es 0 o menos
+        if (restante <= 0){
+            ui.imprimirAlerta('El presupuesto se ha agotado', 'error');
+            formulario.querySelector('button[type="submit"]').disabled = true;
+        }
+    }
 
 }
 
@@ -148,15 +166,17 @@ function agregarGasto(e) {
     const gasto = { nombre, cantidad, id: Date.now() } //Lo mismo que el destructing pero al revés (object Literal) guarda en gasto el nombre y la cantidad
     //Añade un nuevo gasto al array de gastos
     presupuesto.nuevoGasto(gasto);
-    
+
     //Mensaje de validación
     ui.imprimirAlerta('Gasto añadido correctamente')
 
     //Imprimir los gastos
-    const {gastos, restante} = presupuesto;
+    const { gastos, restante } = presupuesto;
     ui.agregarGastoListado(gastos);
 
     ui.actualizarRestante(restante);
+
+    ui.comprobarPresupuesto(presupuesto);
 
     //Reinicia el formulario
     formulario.reset();
